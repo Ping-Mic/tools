@@ -11,7 +11,9 @@ Functions
 
 Install
 ----
-* copy & paste `Demangle (D Lang).py` into Hopper Script Folder
+* copy `Demangle (D Lang).py` into Hopper Script Folder
+* copy `demangle` into `~/bin/ping-mic-tools/reversing/D-demangle/demangle` 
+    * or change `BIN` value in `Demangle (D Lang).py`
 
 Restrictions
 ----
