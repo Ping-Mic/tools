@@ -6,6 +6,7 @@ import re
 # ref. : https://github.com/phracker/HopperScripts/blob/9468cdadb2c139d474662ae82716a5098e7350e4/Annotation%20Export.py
 
 doc = Document.getCurrentDocument()
+doc.destroyTag(doc.buildTag("DanglingFunctions"))
 
 BIN = ""
 
@@ -20,21 +21,20 @@ for segnum in range(nsegs):
 
     len_labels = len(labels)
     print("[*] found %d labels in %s" % (len_labels, seg.getName()))
+
     for i in range(len_labels):
         label = labels[i]
         addr = doc.getAddressForName(label)
-        m = re.search("(flags|libc)", label)
+        if not seg.getTypeAtAddress(addr) == Segment.TYPE_PROCEDURE:
+            continue
+        m = re.search("(type|libc|@|core|std|container|exception|pop|push|info|tmp|length|trace|scan|array|sync|stat|find|collect|dummy|assert|test|pool|shared|object|init|bits|D2gc|D2rt|start|fini|_do_global|_dmd_)", label, re.I)
         if not m == None:
             continue
-        m = re.search("^_(D2|d_)", label)
-        if not m == None:
-            continue            
-        m = re.findall("(flag|encrypt|decrypt|encode|decode|enc|dec|main)", label)
-        if not m == None:
-            for tag_name in m:
-                # print("(%d/%d) Tagging #%s to %s at 0x%x" % (i+1, len_labels, tag_name, label, addr))
-                tag = doc.buildTag(tag_name)
-                doc.addTagAtAddress(tag, addr)
+        refs = seg.getReferencesOfAddress(addr)
+        if len(refs) == 0:
+            # print("No one calls %s at 0x%x" % (label, addr))
+            tag = doc.buildTag("DanglingFunctions")
+            doc.addTagAtAddress(tag, addr)
 
 doc.refreshView()
-print("[*] Added Tags Automically")
+print("[*] Finished Finding Dangling Functions")
