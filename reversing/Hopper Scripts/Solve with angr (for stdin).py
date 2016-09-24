@@ -1,6 +1,6 @@
 import subprocess
-import signal
-import os
+import os, sys
+import re
 
 """you can solve following problems with this plugin:
 https://github.com/angr/angr-doc/tree/master/examples/defcamp_r100
@@ -11,6 +11,12 @@ def print_array(prefix, arr):
     for x in arr:
         buf.append(x)
     print prefix + " = " + ', '.join(buf)
+
+def cleansing(text):
+    text = re.sub("^\.", "", text, flags=re.MULTILINE)
+    text = re.sub("^\.*\n", "", text, flags=re.MULTILINE)
+    text = re.sub("^\s*\n", "", text, flags=re.MULTILINE)
+    return text
 
 doc = Document.getCurrentDocument()
 
@@ -80,6 +86,17 @@ if len(FINDS) == 0 and len(AVOIDS) == 0:
 else:
     source_code = r"""
 import angr
+import sys, threading
+
+FLAG_FINISHED = False
+
+def cyclic_task():
+    # NOTE: enable SIGINT while this child process is runnig 
+    # (stdX.read() in PIPE.communicate() may blocks asynchronous SIGINT)
+    sys.stdout.write('.') 
+    sys.stdout.flush()
+    if FLAG_FINISHED == False:
+        threading.Timer(1, cyclic_task).start()
 
 BIN = "__BIN__"
 
@@ -92,8 +109,10 @@ FLAG_PREFIX_CODE
 initial_path = p.factory.path(initial_state)
 pg = p.factory.path_group(initial_state)
 print("[*] angr exploring...")
+cyclic_task()
 pg.explore(find=FINDS, avoid=AVOIDS)
-
+FLAG_FINISHED = True
+print("")
 if len(pg.found):
     found = pg.found[0]
     print("[*] found: stdin = " + found.state.posix.dumps(0).strip('\0\n'))
@@ -108,21 +127,24 @@ else:
     source_code = source_code.replace("FINDS", "(" + ','.join([str(x) for x in FINDS]) + ")")
     source_code = source_code.replace("AVOIDS", "(" + ','.join([str(x) for x in AVOIDS]) + ")")
 
-    open("angr-solve.py", "w").write(source_code)
-    print("[*] executing angr script")
-    p = subprocess.Popen("python2 angr-solve.py", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = p.communicate()
-    print("==== [angr] ====")
-    print(out[:-1])
-    if len(err) > 0:
-        print("\033[31m;==== [angr:stderr] ====\033[0m;")
-        print(err)
-    else:
-        pass
-        # os.system("rm angr-solve.py")
-
-    print("================")
-    print("[*] solve done")
+    try:
+        open("angr-solve.py", "w").write(source_code)
+        print("[*] executing angr script")
+        p = subprocess.Popen("python2 angr-solve.py", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        print("==== [angr] ====")
+        out = cleansing(out)
+        print(out[:-1])
+        if len(err) > 0:
+            print("==== [angr:stderr] ====")
+            print(err)
+        else:
+            pass
+            # os.system("rm angr-solve.py")
+        print("================")
+        print("[*] solve done")
+    except KeyboardInterrupt:
+        print("[!] canceled")
 
 """memo
 * class Basic Block/Procedure hasTag(), getTagCount() not works
