@@ -74,15 +74,19 @@ for segnum in range(nsegs):
             if doc.hasTagAtAddress(tag_find, start_addr):
                 print("  found #find at 0x%x" % (start_addr))
                 FINDS.append(hex(start_addr)[:-1])
+                if not seg.getNameAtAddress(start_addr):
+                    seg.setNameAtAddress(start_addr, "find_" + hex(start_addr)[:-1])
             elif doc.hasTagAtAddress(tag_avoid, start_addr):
                 print("  found #avoid at 0x%x" % (start_addr))
                 AVOIDS.append(hex(start_addr)[:-1])
+                if not seg.getNameAtAddress(start_addr):
+                    seg.setNameAtAddress(start_addr, "avoid_" + hex(start_addr)[:-1])
 
 print_array("finds", FINDS)
 print_array("avoids", AVOIDS)
 
 if len(FINDS) == 0 and len(AVOIDS) == 0:
-    print("[!] no #find and no #avoid is not given. exit")
+    print("[!] NO #find and #avoid are found. exit")
 else:
     source_code = r"""
 import angr
