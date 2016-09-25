@@ -3,7 +3,7 @@ Hopper Script - Solve with angr
 
 solve for `arg1`(`argv1`)
 ----
-use `(for arg1)` plugin
+use [`(for arg1)` plugin](https://github.com/Ping-Mic/tools/blob/master/reversing/Hopper%20Scripts/Solve%20with%20angr%20(for%20arg1).py)
 
 steps:
 
@@ -16,14 +16,14 @@ steps:
 
 solve for `stdin`
 ----
-use `(for stdin)` plugin
+use [`(for stdin)` plugin](https://github.com/Ping-Mic/tools/blob/master/reversing/Hopper%20Scripts/Solve%20with%20angr%20(for%20stdin).py)
 
 steps: same with `arg1` version
 
 
 solve for variables in `.bss` section
 ----
-use `(for bss)` plugin
+use [`(for bss)` plugin](https://github.com/Ping-Mic/tools/blob/master/reversing/Hopper%20Scripts/Solve%20with%20angr%20(for%20bss).py)
 
 steps:
 
