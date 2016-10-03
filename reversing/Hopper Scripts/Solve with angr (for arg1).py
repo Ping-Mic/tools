@@ -99,8 +99,9 @@ initial_state = p.factory.entry_state(args=[BIN, argv1])
 initial_state.libc.buf_symbolic_bytes = INPUT_LENGTH + 1
 for byte in argv1.chop(8): # initialize all array items
     initial_state.add_constraints(byte != '\x00') # null
-    initial_state.add_constraints(byte >= ' ') # '\x20'
-    initial_state.add_constraints(byte <= '~') # '\x7e'
+    # initial_state.add_constraints(byte >= ' ') # '\x20'
+    # initial_state.add_constraints(byte <= '~') # '\x7e'
+BUF_INIT_CODE
 FLAG_PREFIX_CODE
 
 initial_path = p.factory.path(initial_state)

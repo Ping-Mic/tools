@@ -42,8 +42,8 @@ initial_state.posix.files[0].seek(0)
 for i in range(INPUT_LENGTH): # initialize all array items
     k = initial_state.posix.files[0].read_from(1)
     initial_state.add_constraints(k != '\x00') # null
-    initial_state.add_constraints(k >= ' ') # '\x20'
-    initial_state.add_constraints(k <= '~') # '\x7e'
+    # initial_state.add_constraints(k >= ' ') # '\x20'
+    # initial_state.add_constraints(k <= '~') # '\x7e'
 initial_state.posix.files[0].seek(0)
 """
 
@@ -119,7 +119,7 @@ FLAG_FINISHED = True
 print("")
 if len(pg.found):
     found = pg.found[0]
-    print("[*] found: stdin = " + found.state.posix.dumps(0).strip('\0\n'))
+    print("[*] found: stdin = %r" % found.state.posix.dumps(0).strip('\0\n'))
 else:
     print("[!] not found")
 """

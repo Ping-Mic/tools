@@ -11,14 +11,19 @@ steps:
     * this `find`/`avoid` is same with angr's `find`/`avoid`
 1. specify `input length` in a dialog box as __input length__
     * incorrect input length may results in _no solusions_
-1. __(option)__ you can tell flag format in a dialog box as __flag prefix__
+1. __(optional)__ you can tell flag format in a dialog box as __flag prefix__
 
 
 solve for `stdin`
 ----
 use [`(for stdin)` plugin](https://github.com/Ping-Mic/tools/blob/master/reversing/Hopper%20Scripts/Solve%20with%20angr%20(for%20stdin).py)
 
-steps: same with `arg1` version
+1. add `find` and `avoid` tags to basic blocks (procedures)
+    * this `find`/`avoid` is same with angr's `find`/`avoid`
+1. __(optional)__ specify `input length` in a dialog box as __input length__
+    * incorrect input length may results in _no solusions_
+1. __(optional)__ you can tell flag format in a dialog box as __flag prefix__
+
 
 
 solve for variables in `.bss` section
